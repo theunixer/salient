@@ -15,6 +15,12 @@ pub struct Server {
     config: Config,
 }
 
+impl Default for Server {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Server {
     pub fn new() -> Self {
         let config: Config = confy::load("salient", None).unwrap();
@@ -22,15 +28,14 @@ impl Server {
         Server { listener, config }
     }
 
-    pub fn run<'a>(&'a mut self) {
-        let double_dot_defence = self.config.double_dot_defence.clone();
+    pub fn run(&mut self) {
+        let double_dot_defence = self.config.double_dot_defence;
 
         for stream in self.listener.incoming() {
             let stream = match stream {
                 Ok(stream) => stream,
                 Err(_) => continue,
             };
-            let double_dot_defence = double_dot_defence.clone();
             thread::spawn(move || {
                 Self::handle_connection(stream, double_dot_defence);
             });
@@ -45,28 +50,25 @@ impl Server {
             .take_while(|line| !line.is_empty())
             .collect();
 
-        let mut path = http_request[0].split(" ").nth(1).unwrap_or("/");
+        let mut path = http_request[0].split(' ').nth(1).unwrap_or("/");
 
-        if double_dot_defence {
-            if path.contains("..") {
-                path = "not_found";
-            }
+        if double_dot_defence && path.contains("..") {
+            path = "not_found";
         }
 
         if path == "/" {
             path = "/index.html";
         }
 
-        let temp_path;
-        if path.contains(".") {
-            temp_path = format!("./www{path}");
+        let temp_path = if path.contains('.') {
+            format!("./www{path}")
         } else {
-            temp_path = format!("./www{path}.html");
-        }
+            format!("./www{path}.html")
+        };
 
         path = temp_path.as_str();
 
-        let response = match fs::read_to_string(&path) {
+        let response = match fs::read_to_string(path) {
             Ok(result) => Response::new(result, OK_STATUS),
             Err(_) => Response::new(
                 fs::read_to_string("./www/not_found.html").unwrap_or("Not found.".to_string()),

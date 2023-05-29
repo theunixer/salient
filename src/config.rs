@@ -17,6 +17,6 @@ impl ::std::default::Default for Config {
 
 impl Drop for Config {
     fn drop(&mut self) {
-        confy::store("salient", None, &self).unwrap()
+        confy::store("salient", None, self).unwrap()
     }
 }
