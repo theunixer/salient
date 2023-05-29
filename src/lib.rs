@@ -8,7 +8,7 @@ use std::{
 use config::Config;
 mod config;
 
-use https_tools::Response;
+use https_tools::{Response, NOT_FOUND_STATUS, OK_STATUS};
 mod https_tools;
 pub struct Server {
     listener: TcpListener,
@@ -66,10 +66,13 @@ impl Server {
 
         path = temp_path.as_str();
 
-        let response = Response::new(
-            fs::read_to_string(&path)
-                .unwrap_or(fs::read_to_string("./www/not_found.html").unwrap()),
-        );
+        let response = match fs::read_to_string(&path) {
+            Ok(result) => Response::new(result, OK_STATUS),
+            Err(_) => Response::new(
+                fs::read_to_string("./www/not_found.html").unwrap_or("Not found.".to_string()),
+                NOT_FOUND_STATUS,
+            ),
+        };
 
         stream.write_all(response.bytes()).unwrap();
     }
