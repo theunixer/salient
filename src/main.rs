@@ -1,3 +1,4 @@
+#![forbid(unsafe_code)]
 use salient::Server;
 fn main() {
     let mut server = Server::new();
