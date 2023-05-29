@@ -74,6 +74,6 @@ impl Server {
             ),
         };
 
-        stream.write_all(response.bytes()).unwrap();
+        let _ = stream.write_all(response.bytes());
     }
 }
