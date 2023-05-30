@@ -21,6 +21,7 @@ pub struct Server {
     listener: TcpListener,
     config: Config,
     cache: Option<Cache>,
+    visits: u128,
 }
 
 impl Default for Server {
@@ -40,10 +41,13 @@ impl Server {
             None
         };
 
+        let visits = 0u128;
+
         Server {
             listener,
             config,
             cache,
+            visits,
         }
     }
 
@@ -55,7 +59,12 @@ impl Server {
                 Err(_) => continue,
             };
 
+            if self.config.statistics {
+                self.visits += 1;
+            }
+
             let cache = self.cache.clone();
+
             thread::spawn(move || {
                 Self::handle_connection(stream, double_dot_defence, cache);
             });
@@ -70,14 +79,20 @@ impl Server {
             .take_while(|line| !line.is_empty())
             .collect();
 
+        let request_type = http_request[0].split(' ').nth(0).unwrap_or("GET");
         let path = http_request[0].split(' ').nth(1).unwrap_or("/");
-        let path = content::format_path(path, &double_dot_defence);
 
-        let response: Response = match cache {
-            None => content::page_from_file(&path),
-            Some(cache) => content::page_from_cache(&cache, &path),
-        };
-
-        let _ = stream.write_all(response.bytes());
+        if request_type == "GET" {
+            let path = content::format_path(path, &double_dot_defence);
+            let response: Response = match cache {
+                None => content::page_from_file(&path),
+                Some(cache) => content::page_from_cache(&cache, &path),
+            };
+            let _ = stream.write_all(response.bytes());
+        } else if request_type == "POST" {
+            match path {
+                _ => {},
+            }
+        }
     }
 }

@@ -9,7 +9,7 @@ pub fn format_path(mut path: &str, double_dot_defence: &bool) -> String {
     if *double_dot_defence && path.contains("..") {
         path = "not_found";
     }
-
+    
     if path == "/" {
         path = "/index.html";
     }
