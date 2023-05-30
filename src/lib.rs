@@ -10,9 +10,16 @@ mod config;
 
 use https_tools::{Response, NOT_FOUND_STATUS, OK_STATUS};
 mod https_tools;
+
+mod page;
+
+use cache::Cache;
+mod cache;
+
 pub struct Server {
     listener: TcpListener,
     config: Config,
+    cache: Option<Cache>,
 }
 
 impl Default for Server {
@@ -25,24 +32,36 @@ impl Server {
     pub fn new() -> Self {
         let config: Config = confy::load("salient", None).unwrap();
         let listener = TcpListener::bind(&config.address).unwrap();
-        Server { listener, config }
+
+        let cache: Option<Cache> = if config.caching {
+            Some(Cache::new())
+        } else {
+            None
+        };
+
+        Server {
+            listener,
+            config,
+            cache,
+        }
     }
 
     pub fn run(&mut self) {
         let double_dot_defence = self.config.double_dot_defence;
-
         for stream in self.listener.incoming() {
             let stream = match stream {
                 Ok(stream) => stream,
                 Err(_) => continue,
             };
+
+            let cache = self.cache.clone();
             thread::spawn(move || {
-                Self::handle_connection(stream, double_dot_defence);
+                Self::handle_connection(stream, double_dot_defence, cache);
             });
         }
     }
 
-    fn handle_connection(mut stream: TcpStream, double_dot_defence: bool) {
+    fn handle_connection(mut stream: TcpStream, double_dot_defence: bool, cache: Option<Cache>) {
         let buf_reader = BufReader::new(&mut stream);
         let http_request: Vec<_> = buf_reader
             .lines()
@@ -68,12 +87,23 @@ impl Server {
 
         path = temp_path.as_str();
 
-        let response = match fs::read_to_string(path) {
-            Ok(result) => Response::new(result, OK_STATUS),
-            Err(_) => Response::new(
-                fs::read_to_string("./www/not_found.html").unwrap_or("Not found.".to_string()),
-                NOT_FOUND_STATUS,
-            ),
+        let response: Response = match cache {
+            None => match fs::read_to_string(path) {
+                Ok(result) => Response::new(result, OK_STATUS),
+                Err(_) => Response::new(
+                    fs::read_to_string("./www/not_found.html").unwrap_or("Not found.".to_string()),
+                    NOT_FOUND_STATUS,
+                ),
+            },
+            Some(cache) => {
+                let mut demanded_page = None;
+                for page in cache.pages {
+                    if page.path == path {
+                        demanded_page = Some(page.response);
+                    }
+                }
+                demanded_page.unwrap_or(cache.not_found)
+            }
         };
 
         let _ = stream.write_all(response.bytes());

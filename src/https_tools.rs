@@ -1,3 +1,4 @@
+#[derive(Clone)]
 pub struct Response(String);
 
 pub static OK_STATUS: &str = "HTTP/1.1 200 OK\r\n";
