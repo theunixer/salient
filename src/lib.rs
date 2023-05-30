@@ -70,22 +70,7 @@ impl Server {
             .collect();
 
         let mut path = http_request[0].split(' ').nth(1).unwrap_or("/");
-
-        if double_dot_defence && path.contains("..") {
-            path = "not_found";
-        }
-
-        if path == "/" {
-            path = "/index.html";
-        }
-
-        let temp_path = if path.contains('.') {
-            format!("./www{path}")
-        } else {
-            format!("./www{path}.html")
-        };
-
-        path = temp_path.as_str();
+        let path = Self::format_path(&mut path, &double_dot_defence);
 
         let response: Response = match cache {
             None => match fs::read_to_string(path) {
@@ -107,5 +92,21 @@ impl Server {
         };
 
         let _ = stream.write_all(response.bytes());
+    }
+
+    fn format_path<'a>(mut path: &str, double_dot_defence: &bool) -> String{
+        if *double_dot_defence && path.contains("..") {
+            path = "not_found";
+        }
+
+        if path == "/" {
+            path = "/index.html";
+        }
+
+        if path.contains('.') {
+            format!("./www{path}")
+        } else {
+            format!("./www{path}.html")
+        }
     }
 }
