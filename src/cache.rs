@@ -1,8 +1,8 @@
 use std::fs;
 
 use crate::{
-    https_tools::{Response, NOT_FOUND_STATUS},
     page::Page,
+    response::{Response, NOT_FOUND_STATUS},
 };
 
 #[derive(Clone)]

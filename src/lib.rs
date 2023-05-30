@@ -8,8 +8,8 @@ use std::{
 use config::Config;
 mod config;
 
-use https_tools::{Response, NOT_FOUND_STATUS, OK_STATUS};
-mod https_tools;
+use response::{Response, NOT_FOUND_STATUS, OK_STATUS};
+mod response;
 
 mod page;
 
@@ -94,7 +94,7 @@ impl Server {
         let _ = stream.write_all(response.bytes());
     }
 
-    fn format_path<'a>(mut path: &str, double_dot_defence: &bool) -> String{
+    fn format_path<'a>(mut path: &str, double_dot_defence: &bool) -> String {
         if *double_dot_defence && path.contains("..") {
             path = "not_found";
         }

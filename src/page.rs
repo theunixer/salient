@@ -1,6 +1,6 @@
 use std::{fs, path::Path};
 
-use crate::https_tools::{Response, OK_STATUS};
+use crate::response::{Response, OK_STATUS};
 
 #[derive(Clone)]
 pub struct Page {
