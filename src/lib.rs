@@ -91,7 +91,7 @@ impl Server {
             let _ = stream.write_all(response.bytes());
         } else if request_type == "POST" {
             match path {
-                _ => {},
+                _ => {}
             }
         }
     }
