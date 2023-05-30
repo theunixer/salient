@@ -52,6 +52,7 @@ impl Server {
     }
 
     pub fn run(&mut self) {
+        let mut threads: Vec<thread::JoinHandle<_>> = Vec::new();
         let double_dot_defence = self.config.double_dot_defence;
         for stream in self.listener.incoming() {
             let stream = match stream {
@@ -65,9 +66,17 @@ impl Server {
 
             let cache = self.cache.clone();
 
-            thread::spawn(move || {
+            loop {
+                if threads.len() < self.config.thread_limit {
+                    break;
+                } else {
+                    let _ = threads.remove(0).join();
+                }
+            }
+
+            threads.push(thread::spawn(move || {
                 Self::handle_connection(stream, double_dot_defence, cache);
-            });
+            }));
         }
     }
 
