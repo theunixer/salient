@@ -10,7 +10,8 @@
 
 ## Build and install
 `sh
-    git clone "current repo url"
+    git clone https://github.com/GreatC0der/salient.git
+
     cargo install --path ./salient
 `
 
