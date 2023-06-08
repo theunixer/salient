@@ -9,15 +9,12 @@
 - [x] - Cache code or get on the fly.
 
 ## Build and install
-`sh
+```sh
     git clone https://github.com/GreatC0der/salient.git
 
     cargo install --path ./salient
-`
+```
 
 ## Usage
-Move your website files to www folder.
-`sh
-    salient
-`
+Move your website files to www folder. Run `salient`.
 Config will be generated in default folder for configs, for example `~/.config` on linux.
