@@ -59,7 +59,7 @@ dependencies = [
 
 [[package]]
 name = "http-salient"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "confy",
  "once_cell",

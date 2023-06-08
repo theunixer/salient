@@ -1,10 +1,11 @@
 [package]
 name = "http-salient"
 description = "Simple http webserver"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["GreatC0der"]
 repository = "https://github.com/GreatC0der/salient"
 license = "GPL-3.0"
+readme = "readme.md"
 edition = "2021"
 keywords = ["server", "web", "http"]
 categories = ["web-programming::http-server", "web-programming"]
