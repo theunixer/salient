@@ -1,5 +1,5 @@
 use once_cell::sync::Lazy;
-use salient::Server;
+use http_salient::Server;
 
 fn main() {
     static mut server: Lazy<Server> = Lazy::new(|| Server::new());
