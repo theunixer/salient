@@ -24,12 +24,6 @@ pub struct Server {
     visits: u128,
 }
 
-impl Default for Server {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl Server {
     pub fn new() -> Self {
         let config: Config = confy::load("salient", None).unwrap();
@@ -51,9 +45,8 @@ impl Server {
         }
     }
 
-    pub fn run(&mut self) {
+    pub fn run(&'static mut self) {
         let mut threads: Vec<thread::JoinHandle<_>> = Vec::new();
-        let double_dot_defence = self.config.double_dot_defence;
         for stream in self.listener.incoming() {
             let stream = match stream {
                 Ok(stream) => stream,
@@ -64,8 +57,6 @@ impl Server {
                 self.visits += 1;
             }
 
-            let cache = self.cache.clone();
-
             loop {
                 if threads.len() < self.config.thread_limit {
                     break;
@@ -74,13 +65,13 @@ impl Server {
                 }
             }
 
-            threads.push(thread::spawn(move || {
-                Self::handle_connection(stream, double_dot_defence, cache);
+            threads.push(thread::spawn(|| {
+                Self::handle_connection(stream, &self.config.double_dot_defence, &self.cache);
             }));
         }
     }
 
-    fn handle_connection(mut stream: TcpStream, double_dot_defence: bool, cache: Option<Cache>) {
+    fn handle_connection(mut stream: TcpStream, double_dot_defence: &bool, cache: &Option<Cache>) {
         let buf_reader = BufReader::new(&mut stream);
         let http_request: Vec<_> = buf_reader
             .lines()

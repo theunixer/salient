@@ -1,6 +1,9 @@
-#![forbid(unsafe_code)]
+use once_cell::sync::Lazy;
 use salient::Server;
+
 fn main() {
-    let mut server = Server::new();
-    server.run();
+    static mut server: Lazy<Server> = Lazy::new(|| Server::new());
+
+    // It's safe because we don't change server in multiple threads.
+    unsafe { server.run() }
 }
