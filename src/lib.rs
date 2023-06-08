@@ -21,7 +21,7 @@ pub struct Server {
     listener: TcpListener,
     config: Config,
     cache: Option<Cache>,
-    visits: u128,
+    requests_handled: u128,
 }
 
 impl Server {
@@ -35,18 +35,19 @@ impl Server {
             None
         };
 
-        let visits = 0u128;
+        let requests_handled = 0u128;
 
         Server {
             listener,
             config,
             cache,
-            visits,
+            requests_handled,
         }
     }
 
     pub fn run(&'static mut self) {
         let mut threads: Vec<thread::JoinHandle<_>> = Vec::new();
+        let output_delay = self.config.statistics_output_delay as u128;
         for stream in self.listener.incoming() {
             let stream = match stream {
                 Ok(stream) => stream,
@@ -54,7 +55,10 @@ impl Server {
             };
 
             if self.config.statistics {
-                self.visits += 1;
+                self.requests_handled += 1;
+                if self.requests_handled % output_delay == 0 {
+                    println!("Requests handled: {}", self.requests_handled);
+                }
             }
 
             loop {

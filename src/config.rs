@@ -6,6 +6,7 @@ pub struct Config {
     pub double_dot_defence: bool,
     pub caching: bool,
     pub statistics: bool,
+    pub statistics_output_delay: u64,
     pub thread_limit: usize,
 }
 
@@ -16,6 +17,7 @@ impl ::std::default::Default for Config {
             double_dot_defence: true,
             caching: false,
             statistics: false,
+            statistics_output_delay: 10,
             thread_limit: 4,
         }
     }
