@@ -7,6 +7,7 @@
 - [x] - Easy set up with the config file.
 - [x] - No known vulnerabilities.
 - [x] - Cache code or get on the fly.
+- [x] - Statistics.
 
 ## Build and install
 ```sh
