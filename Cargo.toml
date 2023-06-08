@@ -1,8 +1,13 @@
 [package]
 name = "salient"
+description = "Simple http webserver"
 version = "0.1.0"
+authors = ["GreatC0der"]
+repository = "https://github.com/GreatC0der/salient"
+license = "GPL-3.0"
 edition = "2021"
-
+keywords = ["server", "web", "http"]
+categories = ["web-programming::http-server", "web-programming"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
