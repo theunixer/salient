@@ -58,6 +58,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "http-salient"
+version = "0.1.0"
+dependencies = [
+ "confy",
+ "once_cell",
+ "serde",
+ "serde_derive",
+]
+
+[[package]]
 name = "libc"
 version = "0.2.146"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -105,16 +115,6 @@ dependencies = [
  "getrandom",
  "redox_syscall",
  "thiserror",
-]
-
-[[package]]
-name = "salient"
-version = "0.1.0"
-dependencies = [
- "confy",
- "once_cell",
- "serde",
- "serde_derive",
 ]
 
 [[package]]
