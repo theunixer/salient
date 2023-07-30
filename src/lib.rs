@@ -46,6 +46,10 @@ impl Server {
     }
 
     pub fn run(&'static mut self) {
+        println!(
+            "Starting an http server at http://{}",
+            self.listener.local_addr().unwrap().to_string()
+        );
         let mut threads: Vec<thread::JoinHandle<_>> = Vec::new();
         let output_delay = self.config.statistics_output_delay as u128;
         for stream in self.listener.incoming() {
