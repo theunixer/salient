@@ -12,12 +12,18 @@
 ## Build and install
 ```sh
     git clone https://github.com/GreatC0der/salient.git
-
-    cargo install --path ./salient
+    cd salient
+    cargo install --path .
 ```
 
+Just to check run:
+```sh
+    salient-http
+```
+It shall print a link. Click on it and you shall see the message!
+
 ## Usage
-Move your website files to www folder. Run `salient`.
+Move your website files to www folder. Run `salient-http`.
 Config will be generated in default folder for configs, for example `~/.config` on linux.
 
 ## Config
